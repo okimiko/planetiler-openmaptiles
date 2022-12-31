@@ -83,7 +83,8 @@ public class OpenMapTilesSchema {
       new org.openmaptiles.layers.Place(translations, config, stats),
       new org.openmaptiles.layers.Housenumber(translations, config, stats),
       new org.openmaptiles.layers.Poi(translations, config, stats),
-      new org.openmaptiles.layers.AerodromeLabel(translations, config, stats)
+      new org.openmaptiles.layers.AerodromeLabel(translations, config, stats),
+      new org.openmaptiles.layers.Tree(translations, config, stats)
     );
   }
 
@@ -2085,6 +2086,45 @@ public class OpenMapTilesSchema {
             matchAny("military", "airfield"))),
         MultiExpression.entry("private", or(matchAny("aerodrome", "private"), matchAny("aerodrome_type", "private"))),
         MultiExpression.entry("other", FALSE)));
+    }
+  }
+  /**
+   * <a href="http://wiki.openstreetmap.org/wiki/Tag:natural%3Dtree">Trees</a>
+   *
+   * Generated from
+   * <a href="https://github.com/openmaptiles/openmaptiles/blob/openmaptiles/layers/tree/tree.yaml">tree.yaml</a>
+   */
+  public interface Tree extends Layer {
+    double BUFFER_SIZE = 4.0;
+    String LAYER_NAME = "tree";
+
+    @Override
+    default String name() {
+      return LAYER_NAME;
+    }
+
+    /** Attribute names for map elements in the tree layer. */
+    final class Fields {
+      /**
+       * Type of leaf from <a href="https://wiki.openstreetmap.org/wiki/Key:leaf_type">OSM</a>.
+       * <p>
+       * allowed values:
+       * <ul>
+       * <li>"broadleaved"
+       * <li>"needleleaved"
+       * </ul>
+       */
+      public static final String LEAF_TYPE = "leaf_type";
+    }
+    /** Attribute values for map elements in the tree layer. */
+    final class FieldValues {
+      public static final String LEAF_TYPE_BROADLEAVED = "broadleaved";
+      public static final String LEAF_TYPE_NEEDLELEAVED = "needleleaved";
+      public static final Set<String> LEAF_TYPE_VALUES = Set.of("broadleaved", "needleleaved");
+    }
+    /** Complex mappings to generate attribute values from OSM element tags in the tree layer. */
+    final class FieldMappings {
+
     }
   }
 }
