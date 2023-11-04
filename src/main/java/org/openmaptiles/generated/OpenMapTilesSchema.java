@@ -367,6 +367,19 @@ public class OpenMapTilesSchema {
        * </ul>
        */
       public static final String SUBCLASS = "subclass";
+
+      /**
+       * Leaf type.
+       * <p>
+       * allowed values:
+       * <ul>
+       * <li>"broadleaved"
+       * <li>"needleleaved"
+       * <li>"mixed"
+       * <li>"leafless"
+       * </ul>
+       */
+      public static final String LEAF_TYPE = "leaf_type";
     }
     /** Attribute values for map elements in the landcover layer. */
     final class FieldValues {
@@ -422,6 +435,11 @@ public class OpenMapTilesSchema {
           "flowerbed", "forest", "garden", "glacier", "grass", "grassland", "golf_course", "heath", "mangrove", "marsh",
           "meadow", "orchard", "park", "plant_nursery", "recreation_ground", "reedbed", "saltern", "saltmarsh", "sand",
           "scree", "swamp", "tidalflat", "tundra", "village_green", "vineyard", "wet_meadow", "wetland", "wood");
+      public static final String LEAF_TYPE_BROADLEAVED = "broadleaved";
+      public static final String LEAF_TYPE_NEEDLELEAVED = "needleleaved";
+      public static final String LEAF_TYPE_MIXED = "mixed";
+      public static final String LEAF_TYPE_LEAFLESS = "leafless";
+      public static final Set<String> LEAF_TYPE_VALUES = Set.of("broadleaved", "needleleaved", "mixed", "leafless");
     }
     /** Complex mappings to generate attribute values from OSM element tags in the landcover layer. */
     final class FieldMappings {

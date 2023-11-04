@@ -129,6 +129,7 @@ public class Landcover implements
         .setPixelToleranceBelowZoom(10, 0.25)
         .setAttr(Fields.CLASS, clazz)
         .setAttr(Fields.SUBCLASS, subclass)
+        .setAttr(Fields.LEAF_TYPE, element.leafType())
         .setNumPointsAttr(TEMP_NUM_POINTS_ATTR)
         .setMinZoom(7);
     }
