@@ -84,7 +84,8 @@ public class OpenMapTilesSchema {
       new org.openmaptiles.layers.Housenumber(translations, config, stats),
       new org.openmaptiles.layers.Poi(translations, config, stats),
       new org.openmaptiles.layers.AerodromeLabel(translations, config, stats),
-      new org.openmaptiles.layers.Tree(translations, config, stats)
+      new org.openmaptiles.layers.Tree(translations, config, stats),
+      new org.openmaptiles.layers.Power(translations, config, stats)
     );
   }
 
@@ -2106,11 +2107,12 @@ public class OpenMapTilesSchema {
         MultiExpression.entry("other", FALSE)));
     }
   }
+
   /**
    * <a href="http://wiki.openstreetmap.org/wiki/Tag:natural%3Dtree">Trees</a>
    *
    * Generated from
-   * <a href="https://github.com/openmaptiles/openmaptiles/blob/openmaptiles/layers/tree/tree.yaml">tree.yaml</a>
+   * <a href="https://github.com/openmaptiles/openmaptiles/blob/v3.14/layers/tree/tree.yaml">tree.yaml</a>
    */
   public interface Tree extends Layer {
     double BUFFER_SIZE = 4.0;
@@ -2139,6 +2141,101 @@ public class OpenMapTilesSchema {
       public static final String LEAF_TYPE_BROADLEAVED = "broadleaved";
       public static final String LEAF_TYPE_NEEDLELEAVED = "needleleaved";
       public static final Set<String> LEAF_TYPE_VALUES = Set.of("broadleaved", "needleleaved");
+    }
+    /** Complex mappings to generate attribute values from OSM element tags in the tree layer. */
+    final class FieldMappings {
+
+    }
+  }
+
+  /**
+   * <a href="http://wiki.openstreetmap.org/wiki/Key:power">Power</a>
+   *
+   * Generated from
+   * <a href="https://github.com/openmaptiles/openmaptiles/blob/v3.14/layers/tree/power.yaml">power.yaml</a>
+   */
+  public interface Power extends Layer {
+    double BUFFER_SIZE = 4.0;
+    String LAYER_NAME = "power";
+
+    @Override
+    default String name() {
+      return LAYER_NAME;
+    }
+
+    /** Attribute names for map elements in the tree layer. */
+    final class Fields {
+      /**
+       * Type of leaf from <a href="http://wiki.openstreetmap.org/wiki/Key:power">OSM</a>.
+       * <p>
+       * allowed values:
+       * <ul>
+       * <li>line</li>
+       * <li>minor_line</li>
+       * <li>tower</li>
+       * <li>pole</li>
+       * <li>catenary_mast</li>
+       * <li>plant</li>
+       * <li>generator</li>
+       * <li>substation</li>
+       * <li>portal</li>
+       * <li>transformer</li>
+       * <li>switch</li>
+       * <li>insulator</li>
+       * </ul>
+       */
+      public static final String CLASS = "class";
+      public static final String NAME = "name";
+      public static final String SOURCE = "source_gen";
+      public static final String METHOD = "method";
+    }
+    /** Attribute values for map elements in the power layer. */
+    final class FieldValues {
+      public static final String CLASS_LINE = "line";
+      public static final String CLASS_MINOR_LINE = "minor_line";
+      public static final String CLASS_TOWER = "tower";
+      public static final String CLASS_POLE = "pole";
+      public static final String CLASS_CATERNARY_MAST = "catenary_mast";
+      public static final String CLASS_PLANT = "plant";
+      public static final String CLASS_GENERATOR = "generator";
+      public static final String CLASS_SUBSTATION = "substation";
+      public static final String CLASS_PORTAL = "portal";
+      public static final String CLASS_TRANSFORMER = "transformer";
+      public static final String CLASS_SWITCH = "switch";
+      public static final String CLASS_INSULATOR = "insulator";
+      public static final Set<String> CLASS_VALUES = Set.of("line", "minor_line", "tower", "pole", "catenary_mast", "plant", "generator", "substation", "portal", "transformer", "switch", "insulator");
+
+      public static final String SOURCE_BATTERY = "battery";
+      public static final String SOURCE_BIOGAS = "biogas";
+      public static final String SOURCE_BIOMASS = "biomass";
+      public static final String SOURCE_COAL = "coal";
+      public static final String SOURCE_COMBUSTION = "combustion";
+      public static final String SOURCE_DIESEL = "diesel";
+      public static final String SOURCE_GAS = "gas";
+      public static final String SOURCE_GEOTHERMAL = "geothermal";
+      public static final String SOURCE_HYDRO = "hydro";
+      public static final String SOURCE_NUCLEAR = "nuclear";
+      public static final String SOURCE_OIL = "oil";
+      public static final String SOURCE_SOLAR = "solar";
+      public static final String SOURCE_SOLAR_THERMAL = "solar_thermal";
+      public static final String SOURCE_WASTE = "waste";
+      public static final String SOURCE_WIND = "wind";
+      public static final String SOURCE_WIND_TURBINE = "wind_turbine";
+      public static final String SOURCE_WOOD = "wood";
+      public static final Set<String> SOURCE_VALUES = Set.of("battery", "biogas", "biomass", "coal", "combustion", "diesel", "gas", "geothermal", "hydro", "nuclear", "oil", "solar", "solar_thermal", "waste", "wind", "wind_turbine", "wood");
+
+      public static final String METHOD_ANAEROBIC_DIGESTION= "anaerobic_digestion";
+      public static final String METHOD_COMBUSTION = "combustion";
+      public static final String METHOD_DAM = "dam";
+      public static final String METHOD_FISSION = "fission";
+      public static final String METHOD_GASIFICATION = "gasification";
+      public static final String METHOD_PHOTOVOLTAIC = "photovoltaic";
+      public static final String METHOD_RUN_OF_THE_RIVER = "run-of-the-river";
+      public static final String METHOD_THERMAL = "thermal";
+      public static final String METHOD_WATER_PUMPTED_STORAGE = "water-pumpted-storage";
+      public static final String METHOD_WATER_STORAGE = "water-storage";
+      public static final String METHOD_IND_TURBINE = "wind_turbine";
+      public static final Set<String> METHOD_VALUES = Set.of("anaerobic_digestion", "combustion", "dam", "fission", "gasification", "photovoltaic", "run-of-the-river", "thermal", "water-pumpted-storage", "water-storage", "wind_turbine");
     }
     /** Complex mappings to generate attribute values from OSM element tags in the tree layer. */
     final class FieldMappings {
