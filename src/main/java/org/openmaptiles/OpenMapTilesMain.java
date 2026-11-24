@@ -2,6 +2,7 @@ package org.openmaptiles;
 
 import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
+import com.onthegomap.planetiler.reader.ShapefileOptions;
 import java.nio.file.Path;
 import org.openmaptiles.generated.OpenMapTilesSchema;
 import org.slf4j.Logger;
@@ -18,41 +19,41 @@ public class OpenMapTilesMain {
     run(Arguments.fromArgsOrConfigFile(args));
   }
 
-  static void run(Arguments arguments) throws Exception {
+  static void run(Arguments arguments) {
     Path dataDir = Path.of("data");
-    Path sourcesDir = arguments.file("download_dir", "download directory", dataDir.resolve("sources"));
-    // use --area=... argument, AREA=... env var or area=... in config to set the region of the world to use
-    // will be ignored if osm_path or osm_url are set
-    String area = arguments.getString(
-      "area",
-      "name of the extract to download if osm_url/osm_path not specified (i.e. 'monaco' 'rhode island' 'australia' or 'planet')",
-      "monaco"
-    );
+    Path sourcesDir = arguments.file("download_dir", "where downloaded sources go", dataDir.resolve("sources"));
 
     Planetiler.create(arguments)
       .setDefaultLanguages(OpenMapTilesSchema.LANGUAGES)
       .fetchWikidataNameTranslations(sourcesDir.resolve("wikidata_names.json"))
       // defer creation of the profile because it depends on data from the runner
       .setProfile(OpenMapTilesProfile::new)
+      // read small sources together in a shared pool of workers before OSM starts
+      .readSourcesTogether()
       // override any of these with arguments: --osm_path=... or --osm_url=...
       // or OSM_PATH=... OSM_URL=... environmental argument
       // or osm_path=... osm_url=... in a config file
-      .addShapefileSource("EPSG:3857", OpenMapTilesProfile.LAKE_CENTERLINE_SOURCE,
-        sourcesDir.resolve("lake_centerline.shp.zip"),
-        // upstream is at https://github.com/acalcutt/osm-lakelines/releases/download/latest/lake_centerline.shp.zip ,
-        // following is same URL as used in the OpenMapTiles (but SHP format), a mirror maintained by MapTiler
-        "https://dev.maptiler.download/geodata/omt/lake_centerline.shp.zip")
-      .addShapefileSource(OpenMapTilesProfile.WATER_POLYGON_SOURCE,
-        sourcesDir.resolve("water-polygons-split-3857.zip"),
-        "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
-      .addNaturalEarthSource(OpenMapTilesProfile.NATURAL_EARTH_SOURCE,
-        sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
-        // upstream is at https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip ,
-        // following is same URL as used in the OpenMapTiles, a mirror maintained by MapTiler
-        "https://dev.maptiler.download/geodata/omt/natural_earth_vector.sqlite.zip")
-      .addOsmSource(OpenMapTilesProfile.OSM_SOURCE,
-        sourcesDir.resolve(area.replaceAll("[^a-zA-Z]+", "_") + ".osm.pbf"),
-        "planet".equalsIgnoreCase(area) ? ("aws:latest") : ("geofabrik:" + area))
+      // Only download the bytes needed from these geoparquet source based on bounds,
+      // Converted by: https://github.com/onthegomap/planetiler/blob/main/scripts/shp2parquet.py
+      // Upstream: https://github.com/acalcutt/osm-lakelines
+      .addParquetSource(OpenMapTilesProfile.LAKE_CENTERLINE_SOURCE,
+        sourcesDir.resolve("lake_centerline.parquet"),
+        "https://planetiler.onthegomap.com/lake_centerline.parquet")
+      // Upstream: https://osmdata.openstreetmap.de/data/water-polygons.html
+      .addParquetSource(OpenMapTilesProfile.WATER_POLYGON_SOURCE,
+        sourcesDir.resolve("water_polygons.parquet"),
+        "https://planetiler.onthegomap.com/water_polygons.parquet")
+      // Upstream: https://www.naturalearthdata.com/downloads/
+      // --natural_earth_path can also point to the full zip file containing every table, downloaded manually from
+      // https://naciscdn.org/naturalearth/packages/natural_earth_vector.zip
+      .addShapefileMultiUrlSource(OpenMapTilesProfile.NATURAL_EARTH_SOURCE,
+        sourcesDir.resolve("natural_earth"),
+        OpenMapTilesProfile.NATURAL_EARTH_TABLES.stream()
+          .map(table -> "https://naciscdn.org/naturalearth/" + table + ".zip").toList(),
+        // match natural earth sqlite attribute names/values
+        ShapefileOptions.builder().lowercaseAttributeNames(true).emptyStringsAsNull(true).build())
+      // use --area=... argument, to set the region of the world to use if osm_path/osm_url are not set explicitly
+      .addOsmSourceForArea(OpenMapTilesProfile.OSM_SOURCE, sourcesDir, "monaco")
       // override with --mbtiles=... argument or MBTILES=... env var or mbtiles=... in a config file
       .setOutput("mbtiles", dataDir.resolve("output.mbtiles"))
       .run();
